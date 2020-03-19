@@ -36,6 +36,12 @@ public enum PluginCfg {
 
     private List<PluginDefine> pluginClassList = new ArrayList<PluginDefine>();
 
+    /**
+     * "skywalking-plugin.def"
+     *
+     * @param input
+     * @throws IOException
+     */
     void load(InputStream input) throws IOException {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -45,6 +51,9 @@ public enum PluginCfg {
                     if (pluginDefine == null || pluginDefine.trim().length() == 0 || pluginDefine.startsWith("#")) {
                         continue;
                     }
+                    /**
+                     * 形如: MOCKPLUGIN=org.apache.skywalking.apm.agent.core.plugin.MockAbstractClassEnhancePluginDefine
+                     */
                     PluginDefine plugin = PluginDefine.build(pluginDefine);
                     pluginClassList.add(plugin);
                 } catch (IllegalPluginDefineException e) {
