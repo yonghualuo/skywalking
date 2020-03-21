@@ -432,16 +432,16 @@ public class TracingContext implements AbstractTracerContext {
                 exitSpan = new ExitSpan(spanIdGenerator++, parentSpanId, operationName, owner);
             } else {
                 exitSpan = (AbstractSpan) DictionaryManager.findNetworkAddressSection()
-                                                           .find(remotePeer)
-                                                           .doInCondition(
-                                                               peerId -> new ExitSpan(spanIdGenerator++, parentSpanId,
-                                                                                      operationName, peerId, owner
-                                                               ), () -> {
-                                                                   return new ExitSpan(
-                                                                       spanIdGenerator++, parentSpanId, operationName,
-                                                                       remotePeer, owner
-                                                                   );
-                                                               });
+                        .find(remotePeer)
+                        .doInCondition(
+                                peerId -> new ExitSpan(spanIdGenerator++, parentSpanId,
+                                        operationName, peerId, owner
+                                ), () -> {
+                                    return new ExitSpan(
+                                            spanIdGenerator++, parentSpanId, operationName,
+                                            remotePeer, owner
+                                    );
+                                });
             }
             push(exitSpan);
         }

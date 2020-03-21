@@ -48,13 +48,13 @@ public class InterceptorInstanceLoader {
      * @return the type reference.
      */
     public static <T> T load(String className,
-        ClassLoader targetClassLoader) throws IllegalAccessException, InstantiationException, ClassNotFoundException, AgentPackageNotFoundException {
+                             ClassLoader targetClassLoader) throws IllegalAccessException, InstantiationException, ClassNotFoundException, AgentPackageNotFoundException {
         if (targetClassLoader == null) {
             targetClassLoader = InterceptorInstanceLoader.class.getClassLoader();
         }
         String instanceKey = className + "_OF_" + targetClassLoader.getClass()
-                                                                   .getName() + "@" + Integer.toHexString(targetClassLoader
-            .hashCode());
+                .getName() + "@" + Integer.toHexString(targetClassLoader
+                .hashCode());
         Object inst = INSTANCE_CACHE.get(instanceKey);
         if (inst == null) {
             INSTANCE_LOAD_LOCK.lock();
