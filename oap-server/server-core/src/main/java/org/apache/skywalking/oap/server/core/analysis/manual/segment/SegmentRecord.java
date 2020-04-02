@@ -37,17 +37,53 @@ import org.apache.skywalking.oap.server.library.util.CollectionUtils;
 public class SegmentRecord extends Record {
 
     public static final String INDEX_NAME = "segment";
+    /**
+     * 数据本身的唯一id，类似于主键，通过snowflake模式生成
+     */
     public static final String SEGMENT_ID = "segment_id";
+    /**
+     * 本次调用的ID
+     */
     public static final String TRACE_ID = "trace_id";
+    /**
+     * 服务的唯一id
+     */
     public static final String SERVICE_ID = "service_id";
+    /**
+     * 被调用的实例的唯一ID
+     */
     public static final String SERVICE_INSTANCE_ID = "service_instance_id";
+    /**
+     * 被调用的接口
+     */
     public static final String ENDPOINT_NAME = "endpoint_name";
+    /**
+     * 被调用的接口的唯一ID
+     */
     public static final String ENDPOINT_ID = "endpoint_id";
+    /**
+     * 开始时间戳
+     */
     public static final String START_TIME = "start_time";
+    /**
+     * 结束时间戳
+     */
     public static final String END_TIME = "end_time";
+    /**
+     * 耗时
+     */
     public static final String LATENCY = "latency";
+    /**
+     * 是否失败
+     */
     public static final String IS_ERROR = "is_error";
+    /**
+     * 里面保存了本次调用的所有Span的数据，序列化并用Base64编码，不会进行分析和用于查询
+     */
     public static final String DATA_BINARY = "data_binary";
+    /**
+     * 本数据结构的版本号
+     */
     public static final String VERSION = "version";
 
     @Setter

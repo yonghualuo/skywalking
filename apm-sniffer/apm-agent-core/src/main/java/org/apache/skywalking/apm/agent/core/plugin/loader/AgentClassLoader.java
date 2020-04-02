@@ -39,6 +39,8 @@ import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.agent.core.plugin.PluginBootstrap;
 
 /**
+ * 目的是不在应用的Classpath中引入SkyWalking的插件jar包。
+ *
  * The <code>AgentClassLoader</code> represents a classloader, which is in charge of finding plugins and interceptors.
  */
 public class AgentClassLoader extends ClassLoader {
@@ -80,9 +82,12 @@ public class AgentClassLoader extends ClassLoader {
     }
 
     public AgentClassLoader(ClassLoader parent) throws AgentPackageNotFoundException {
+        // 双亲委派机制
         super(parent);
+        // 获取skywalking-agent.jar所在的目录
         File agentDictionary = AgentPackagePath.getPath();
         classpath = new LinkedList<>();
+        // 初始化classpath集合
         classpath.add(new File(agentDictionary, "plugins"));
         classpath.add(new File(agentDictionary, "activations"));
     }
@@ -91,7 +96,7 @@ public class AgentClassLoader extends ClassLoader {
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         List<Jar> allJars = getAllJars();
         String path = name.replace('.', '/').concat(".class");
-        for (Jar jar : allJars) {
+        for (Jar jar : allJars) { // 扫描所有jar包，查找类文件
             JarEntry entry = jar.jarFile.getJarEntry(path);
             if (entry == null) {
                 continue;

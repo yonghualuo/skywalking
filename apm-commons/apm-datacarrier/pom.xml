@@ -24,7 +24,7 @@
         <version>7.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <description>生产者-消费者模式的缓存组件(DataCarrier)</description>
     <artifactId>apm-datacarrier</artifactId>
 
 </project>

@@ -23,7 +23,7 @@
         <version>7.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <description>字符串处理工具类。。</description>
     <artifactId>apm-util</artifactId>
     <packaging>jar</packaging>
 

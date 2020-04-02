@@ -60,8 +60,10 @@ public class SkyWalkingAgent {
     public static void premain(String agentArgs, Instrumentation instrumentation) throws PluginException {
         final PluginFinder pluginFinder;
         try {
+            // 初始化配置信息
             SnifferConfigInitializer.initialize(agentArgs);
 
+            // 查找并解析skywalking-plugin.def插件文件
             pluginFinder = new PluginFinder(new PluginBootstrap().loadPlugins());
 
         } catch (AgentPackageNotFoundException ape) {
@@ -82,7 +84,7 @@ public class SkyWalkingAgent {
                                             .or(nameContains(".reflectasm."))
                                             .or(nameStartsWith("sun.reflect"))
                                             .or(allSkyWalkingAgentExcludeToolkit())
-                                            .or(ElementMatchers.isSynthetic()));
+                                            .or(ElementMatchers.isSynthetic())); // 忽略编译器生成的synthetic类及方法
 
         JDK9ModuleExporter.EdgeClasses edgeClasses = new JDK9ModuleExporter.EdgeClasses();
         try {
@@ -99,18 +101,29 @@ public class SkyWalkingAgent {
             return;
         }
 
+        /**
+         *
+         * type()：在类加载时根据传入的 ElementMatcher 进行拦截，
+         * 拦截到的目标类将会被 transform() 方法中指定的 Transformer 进行增强。
+         *
+         */
+        //通过pluginFinder加载所有的探针扩展，并获取所有可以增强的class
         agentBuilder.type(pluginFinder.buildMatch())
+                    //按照pluginFinder的实现，去改变字节码增强类
                     .transform(new Transformer(pluginFinder))
                     .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+                    //通过listener订阅增强的操作记录，方便调试
                     .with(new Listener())
                     .installOn(instrumentation);
 
         try {
+            //使用jdk spi 加载所有的service实现并启动
             ServiceManager.INSTANCE.boot();
         } catch (Exception e) {
             logger.error(e, "Skywalking agent boot failure.");
         }
 
+        // 添加一个jvm钩子，在jvm退出时关闭所有 BootService 服务
         Runtime.getRuntime()
                .addShutdownHook(new Thread(ServiceManager.INSTANCE::shutdown, "skywalking service shutdown thread"));
     }
@@ -122,6 +135,14 @@ public class SkyWalkingAgent {
             this.pluginFinder = pluginFinder;
         }
 
+        /**
+         *
+         * @param builder
+         * @param typeDescription 被拦截的目标类
+         * @param classLoader 加载目标类的classLoader
+         * @param module
+         * @return
+         */
         @Override
         public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder,
                                                 final TypeDescription typeDescription,
@@ -132,9 +153,11 @@ public class SkyWalkingAgent {
                 DynamicType.Builder<?> newBuilder = builder;
                 EnhanceContext context = new EnhanceContext();
                 for (AbstractClassEnhancePluginDefine define : pluginDefines) {
+                    // 完成对目标类的增强
                     DynamicType.Builder<?> possibleNewBuilder = define.define(
                         typeDescription, newBuilder, classLoader, context);
                     if (possibleNewBuilder != null) {
+                        // ⚠️ 注意这里，如果匹配了多个插件，会被增强多次
                         newBuilder = possibleNewBuilder;
                     }
                 }
@@ -150,6 +173,10 @@ public class SkyWalkingAgent {
         }
     }
 
+    /**
+     * 处理skywalking的类
+     * @return
+     */
     private static ElementMatcher.Junction<NamedElement> allSkyWalkingAgentExcludeToolkit() {
         return nameStartsWith("org.apache.skywalking.").and(not(nameStartsWith("org.apache.skywalking.apm.toolkit.")));
     }

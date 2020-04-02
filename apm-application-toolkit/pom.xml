@@ -25,6 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apm-application-toolkit</artifactId>
     <packaging>pom</packaging>
+    <description>提供给用户调用的工具箱。如log日志框架, @Trace注解</description>
 
     <properties>
         <compiler.version>1.8</compiler.version>

@@ -26,6 +26,8 @@ import java.lang.reflect.Method;
  */
 public interface InstanceMethodsAroundInterceptor {
     /**
+     * //方法真正执行前执行
+     *
      * called before target method invocation.
      *
      * @param result change this result, if you want to truncate the method.
@@ -34,6 +36,8 @@ public interface InstanceMethodsAroundInterceptor {
         MethodInterceptResult result) throws Throwable;
 
     /**
+     * //方法真正执行后执行
+     *
      * called after target method invocation. Even method's invocation triggers an exception.
      *
      * @param ret the method's original return value.
@@ -43,6 +47,8 @@ public interface InstanceMethodsAroundInterceptor {
         Object ret) throws Throwable;
 
     /**
+     * //当异常发生时执行
+     *
      * called when occur exception.
      *
      * @param t the exception occur.

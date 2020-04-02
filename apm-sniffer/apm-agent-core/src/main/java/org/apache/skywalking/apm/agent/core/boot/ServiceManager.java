@@ -61,6 +61,7 @@ public enum ServiceManager {
         load(allServices);
         for (final BootService bootService : allServices) {
             Class<? extends BootService> bootServiceClass = bootService.getClass();
+            // @DefaultImplementor 标识BootService接口的默认实现
             boolean isDefaultImplementor = bootServiceClass.isAnnotationPresent(DefaultImplementor.class);
             if (isDefaultImplementor) {
                 if (!bootedServices.containsKey(bootServiceClass)) {
@@ -69,6 +70,7 @@ public enum ServiceManager {
                     //ignore the default service
                 }
             } else {
+                // @OverrideImplementor 用于覆盖默认BootService实现，通过其value字段指定要覆盖的默认实现。
                 OverrideImplementor overrideImplementor = bootServiceClass.getAnnotation(OverrideImplementor.class);
                 if (overrideImplementor == null) {
                     if (!bootedServices.containsKey(bootServiceClass)) {

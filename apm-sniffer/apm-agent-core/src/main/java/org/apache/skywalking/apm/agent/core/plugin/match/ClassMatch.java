@@ -18,5 +18,9 @@
 
 package org.apache.skywalking.apm.agent.core.plugin.match;
 
+
+/**
+ * 类似过滤器
+ */
 public interface ClassMatch {
 }

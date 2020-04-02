@@ -58,19 +58,23 @@ public class SnifferConfigInitializer {
      * At the end, `agent.service_name` and `collector.servers` must not be blank.
      */
     public static void initialize(String agentOptions) {
+        // 加载agent.config配置文件
         try (final InputStreamReader configFileStream = loadConfig()) {
             Properties properties = new Properties();
             properties.load(configFileStream);
             for (String key : properties.stringPropertyNames()) {
                 String value = (String) properties.get(key);
+                // 按照${配置项名称:默认值}的格式解析各个配置项
                 properties.put(key, PropertyPlaceholderHelper.INSTANCE.replacePlaceholders(value, properties));
             }
+            // 填充 Config中的静态字段
             ConfigInitializer.initialize(properties, Config.class);
         } catch (Exception e) {
             logger.error(e, "Failed to read the config file, skywalking is going to run in default config.");
         }
 
         try {
+            // 解析环境变量，并覆盖 Config中相应的静态字段
             overrideConfigBySystemProp();
         } catch (Exception e) {
             logger.error(e, "Failed to read the system properties.");
@@ -82,6 +86,7 @@ public class SnifferConfigInitializer {
                 agentOptions = agentOptions.trim();
                 logger.info("Agent options is {}.", agentOptions);
 
+                // 解析 Java agent 参数，并覆盖 Config中相应的静态字段
                 overrideConfigByAgentOptions(agentOptions);
             } catch (Exception e) {
                 logger.error(e, "Failed to parse the agent options, val is {}.", agentOptions);
@@ -98,7 +103,7 @@ public class SnifferConfigInitializer {
             logger.warn("PEER_MAX_LENGTH configuration:{} error, the default value of 200 will be used.", Config.Plugin.PEER_MAX_LENGTH);
             Config.Plugin.PEER_MAX_LENGTH = 200;
         }
-
+        // 更新初始化标记
         IS_INIT_COMPLETED = true;
     }
 

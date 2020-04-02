@@ -30,6 +30,8 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 public interface InstanceMethodsInterceptPoint {
     /**
+     * //定义切向方法的适配器，符合适配器的class将被增强
+     *
      * class instance methods matcher.
      *
      * @return methods matcher
@@ -37,9 +39,12 @@ public interface InstanceMethodsInterceptPoint {
     ElementMatcher<MethodDescription> getMethodsMatcher();
 
     /**
+     * //增强的具体实现类，classReference
+     *
      * @return represents a class name, the class instance must instanceof InstanceMethodsAroundInterceptor.
      */
     String getMethodsInterceptor();
 
+    //是否重写参数
     boolean isOverrideArgs();
 }

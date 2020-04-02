@@ -30,6 +30,9 @@ import org.apache.skywalking.oap.server.core.storage.annotation.Column;
  */
 public abstract class Record implements StorageData {
 
+    /**
+     * 调用所处的时段
+     */
     public static final String TIME_BUCKET = "time_bucket";
 
     /**

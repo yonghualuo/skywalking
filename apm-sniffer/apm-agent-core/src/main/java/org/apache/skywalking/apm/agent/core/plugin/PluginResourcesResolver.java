@@ -28,6 +28,8 @@ import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.agent.core.plugin.loader.AgentClassLoader;
 
 /**
+ * Agent插件的资源解析器
+ *
  * Use the current classloader to read all plugin define file. The file must be named 'skywalking-plugin.def'
  */
 public class PluginResourcesResolver {

@@ -24,7 +24,7 @@
         <version>7.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <description>注意proto文件, agent和oap使用grpc交互时的协议</description>
     <artifactId>apm-protocol</artifactId>
     <packaging>pom</packaging>
 

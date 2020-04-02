@@ -30,6 +30,8 @@ import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 import org.apache.skywalking.apm.util.StringUtil;
 
 /**
+ * 所有Agent插件类的顶级父类
+ *
  * Basic abstract class of all sky-walking auto-instrumentation plugins.
  * <p>
  * It provides the outline of enhancing the target class. If you want to know more about enhancing, you should go to see
@@ -39,6 +41,9 @@ public abstract class AbstractClassEnhancePluginDefine {
     private static final ILog logger = LogManager.getLogger(AbstractClassEnhancePluginDefine.class);
 
     /**
+     *
+     * 插件类增强逻辑的入口，底层会调用下面的enhance()方法和witnessClass()方法。
+     *
      * Main entrance of enhancing the class.
      *
      * @param typeDescription target class description.
@@ -82,10 +87,23 @@ public abstract class AbstractClassEnhancePluginDefine {
         return newClassBuilder;
     }
 
+    /**
+     * 真正执行增强逻辑的地方
+     *
+     * @param typeDescription
+     * @param newClassBuilder
+     * @param classLoader
+     * @param context
+     * @return
+     * @throws PluginException
+     */
     protected abstract DynamicType.Builder<?> enhance(TypeDescription typeDescription,
         DynamicType.Builder<?> newClassBuilder, ClassLoader classLoader, EnhanceContext context) throws PluginException;
 
     /**
+     *
+     * 返回的ClassMatch，用于匹配当前插件要增强的目标类。
+     *
      * Define the {@link ClassMatch} for filtering class.
      *
      * @return {@link ClassMatch}
@@ -93,6 +111,9 @@ public abstract class AbstractClassEnhancePluginDefine {
     protected abstract ClassMatch enhanceClass();
 
     /**
+     *
+     * 一个开源组件可能有多个版本，插件会通过该方法识别组件的不同版本，防止对不兼容的版本进行增强。
+     *
      * Witness classname list. Why need witness classname? Let's see like this: A library existed two released versions
      * (like 1.0, 2.0), which include the same target classes, but because of version iterator, they may have the same
      * name, but different methods, or different method arguments list. So, if I want to target the particular version

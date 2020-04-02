@@ -44,6 +44,10 @@ public class ClassAnnotationMatch implements IndirectMatch {
         this.annotations = annotations;
     }
 
+    /**
+     * 为每一个注解创建相应的Junction，并将它们以and形式连接起来并返回。
+     * @return
+     */
     @Override
     public ElementMatcher.Junction buildJunction() {
         ElementMatcher.Junction junction = null;
@@ -54,17 +58,26 @@ public class ClassAnnotationMatch implements IndirectMatch {
                 junction = junction.and(buildEachAnnotation(annotation));
             }
         }
-        junction = junction.and(not(isInterface()));
+        junction = junction.and(not(isInterface())); // 排除接口
         return junction;
     }
 
+    /**
+     * 只有包含注解的类，才能匹配成功。
+     *
+     * @param typeDescription
+     * @return
+     */
     @Override
     public boolean isMatch(TypeDescription typeDescription) {
         List<String> annotationList = new ArrayList<String>(Arrays.asList(annotations));
+        // 获取类上的注解
         AnnotationList declaredAnnotations = typeDescription.getDeclaredAnnotations();
         for (AnnotationDescription annotation : declaredAnnotations) {
+            // 匹配一个删除一个
             annotationList.remove(annotation.getAnnotationType().getActualName());
         }
+        // 删空了，就匹配成功了
         return annotationList.isEmpty();
     }
 

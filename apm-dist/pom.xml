@@ -24,7 +24,7 @@
         <version>7.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <description>打包命令文件</description>
     <artifactId>apache-skywalking-apm</artifactId>
     <packaging>pom</packaging>
 
