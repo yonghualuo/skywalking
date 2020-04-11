@@ -30,6 +30,8 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 public interface StaticMethodsInterceptPoint {
     /**
+     * 用于匹配目标静态方法
+     *
      * static methods matcher.
      *
      * @return matcher instance.
@@ -37,9 +39,16 @@ public interface StaticMethodsInterceptPoint {
     ElementMatcher<MethodDescription> getMethodsMatcher();
 
     /**
+     * 拦截到的静态方法交给哪个Interceptor来增强
+     *
      * @return represents a class name, the class instance must instanceof StaticMethodsAroundInterceptor.
      */
     String getMethodsInterceptor();
 
+    /**
+     * 增强过程中是否需要修改参数
+     *
+     * @return
+     */
     boolean isOverrideArgs();
 }

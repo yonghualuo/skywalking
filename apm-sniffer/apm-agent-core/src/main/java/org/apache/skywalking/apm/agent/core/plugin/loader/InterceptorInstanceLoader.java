@@ -33,9 +33,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>
  */
 public class InterceptorInstanceLoader {
-
+    // 记录了 instanceKey与实例之间的映射关系，保证单例
     private static ConcurrentHashMap<String, Object> INSTANCE_CACHE = new ConcurrentHashMap<String, Object>();
     private static ReentrantLock INSTANCE_LOAD_LOCK = new ReentrantLock();
+    // 记录了 targetClassLoader 以及其子 AgentClassLoader 的对应关系
     private static Map<ClassLoader, ClassLoader> EXTEND_PLUGIN_CLASSLOADERS = new HashMap<ClassLoader, ClassLoader>();
 
     /**

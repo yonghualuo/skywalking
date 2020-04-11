@@ -19,6 +19,7 @@
 package org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance;
 
 import java.lang.reflect.Method;
+
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Morph;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -63,9 +64,10 @@ public class StaticMethodsInterWithOverrideArgs {
      */
     @RuntimeType
     public Object intercept(@Origin Class<?> clazz, @AllArguments Object[] allArguments, @Origin Method method,
-        @Morph OverrideCallable zuper) throws Throwable {
+                            @Morph OverrideCallable zuper) throws Throwable {
+        // 加载插件指定的StaticMethodsAroundInterceptor
         StaticMethodsAroundInterceptor interceptor = InterceptorInstanceLoader.load(staticMethodsAroundInterceptorClassName, clazz
-            .getClassLoader());
+                .getClassLoader());
 
         MethodInterceptResult result = new MethodInterceptResult();
         try {
@@ -76,9 +78,11 @@ public class StaticMethodsInterWithOverrideArgs {
 
         Object ret = null;
         try {
+            // 根据before()的处理结果判定是否调用目标方法
             if (!result.isContinue()) {
                 ret = result._ret();
             } else {
+                // ⚠️这里是需要传参的，这些参数我们是可以在before()方法中改动的，这就是OverrideArgs的意义
                 ret = zuper.call(allArguments);
             }
         } catch (Throwable t) {

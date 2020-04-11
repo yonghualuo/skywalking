@@ -32,6 +32,7 @@ public class ConnectionInstrumentation extends AbstractMysqlInstrumentation {
 
     @Override
     public ConstructorInterceptPoint[] getConstructorsInterceptPoints() {
+        // 返回空数组
         return new ConstructorInterceptPoint[0];
     }
 

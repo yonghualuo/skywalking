@@ -32,7 +32,7 @@ public class ConnectionCreateInterceptor implements StaticMethodsAroundIntercept
     @Override
     public void beforeMethod(Class clazz, Method method, Object[] allArguments, Class<?>[] parameterTypes,
         MethodInterceptResult result) {
-
+        // pass
     }
 
     @Override
@@ -49,6 +49,6 @@ public class ConnectionCreateInterceptor implements StaticMethodsAroundIntercept
     @Override
     public void handleMethodException(Class clazz, Method method, Object[] allArguments, Class<?>[] parameterTypes,
         Throwable t) {
-
+        // pass
     }
 }

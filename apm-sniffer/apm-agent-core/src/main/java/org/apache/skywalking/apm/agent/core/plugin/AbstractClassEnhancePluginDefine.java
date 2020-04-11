@@ -69,8 +69,10 @@ public abstract class AbstractClassEnhancePluginDefine {
         String[] witnessClasses = witnessClasses();
         if (witnessClasses != null) {
             for (String witnessClass : witnessClasses) {
+                // 判断指定类加载器中是否存在{@link witnessClasses()}指定的类
                 if (!WitnessClassFinder.INSTANCE.exist(witnessClass, classLoader)) {
                     logger.warn("enhance class {} by plugin {} is not working. Because witness class {} is not existed.", transformClassName, interceptorDefineClassName, witnessClass);
+                    // 若不存在则表示版本不匹配，直接返回
                     return null;
                 }
             }
