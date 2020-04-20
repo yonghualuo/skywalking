@@ -30,6 +30,10 @@ import org.apache.skywalking.apm.network.language.agent.UpstreamSegment;
 import org.apache.skywalking.apm.network.language.agent.v2.SegmentObject;
 
 /**
+ * 介入Trace与Span之间的概念，它是一条Trace的一段，可以包含多个Span。
+ * 记录了一个请求在一个线程中的执行流程（即Trace信息）。将该请求关联的TraceSegment串联起来，就能得到
+ * 该请求的完整Trace。
+ *
  * {@link TraceSegment} is a segment or fragment of the distributed trace. See https://github.com/opentracing/specification/blob/master/specification.md#the-opentracing-data-model
  * A {@link TraceSegment} means the segment, which exists in current {@link Thread}. And the distributed trace is formed
  * by multi {@link TraceSegment}s, because the distributed trace crosses multi-processes, multi-threads. <p>
@@ -63,10 +67,12 @@ public class TraceSegment {
      * parent, <p> and <p> <code>relatedGlobalTraces</code> targets this {@link TraceSegment}'s related call chain, a
      * call chain contains multi {@link TraceSegment}s, only using {@link #refs} is not enough for analysis and ui.
      */
+    // 记录当前TraceSegment所属Trace的TraceId
     private DistributedTraceIds relatedGlobalTraces;
 
     private boolean ignore = false;
 
+    // 容错设计，防止业务代码出现死循环，每个TraceSegment中Span的个数是有上限的，默认300。
     private boolean isSizeLimited = false;
 
     private final long createTime;

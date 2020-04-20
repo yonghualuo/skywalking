@@ -23,6 +23,7 @@ import org.apache.skywalking.apm.agent.core.conf.RemoteDownstreamConfig;
 import org.apache.skywalking.apm.agent.core.dictionary.DictionaryUtil;
 
 public final class GlobalIdGenerator {
+    // 每个线程维护一个IDContext对象
     private static final ThreadLocal<IDContext> THREAD_ID_SEQUENCE = ThreadLocal.withInitial(
         () -> new IDContext(System.currentTimeMillis(), (short) 0));
 
