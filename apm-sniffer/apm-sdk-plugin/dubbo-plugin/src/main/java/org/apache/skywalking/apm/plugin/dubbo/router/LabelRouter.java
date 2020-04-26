@@ -8,6 +8,7 @@ import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.cluster.Router;
 import org.apache.skywalking.apm.plugin.dubbo.util.StringUtils;
+import org.apache.skywalking.apm.plugin.dubbo.util.ThreadLocalLabel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,13 +91,41 @@ public class LabelRouter implements Router {
         return priority;
     }
 
-    private String getLabelFromEnv(String labelKey) {
-        String label = RpcContext.getContext().getAttachment(labelKey);
-        if (StringUtils.isEmpty(label)) {
-            label = System.getProperty(labelKey);
-            RpcContext.getContext().getAttachments().put(labelKey, label);
+    private static List<EnvLabel> envLabels = new ArrayList<>();
+
+    {
+        envLabels.add(labelKey -> RpcContext.getContext().getAttachment(labelKey));
+        envLabels.add(labelKey -> {
+            String label = ThreadLocalLabel.get();
+            if (!StringUtils.isEmpty(label)) {
+                ThreadLocalLabel.set(label);
+                RpcContext.getContext().getAttachments().put(labelKey, label);
+            }
+            return label;
+        });
+        envLabels.add(labelKey ->  {
+            String label = System.getProperty(labelKey);
+            if (!StringUtils.isEmpty(label)) {
+                ThreadLocalLabel.set(label);
+                RpcContext.getContext().getAttachments().put(labelKey, label);
+            }
+            return label;
+        });
+    }
+
+    public String getLabelFromEnv(String labelKey) {
+        for (EnvLabel envLabel : envLabels) {
+            String label = envLabel.get(labelKey);
+            if (!StringUtils.isEmpty(label)) {
+                return label;
+            }
         }
-        return label;
+
+        return null;
+    }
+
+    public interface EnvLabel {
+        String get(String labelKey);
     }
 
 }
