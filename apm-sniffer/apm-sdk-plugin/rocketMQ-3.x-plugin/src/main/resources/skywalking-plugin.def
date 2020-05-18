@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.define.ConsumeMessageConcurrentlyInstrumentation
-rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.define.ConsumeMessageOrderlyInstrumentation
-rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.define.MQClientAPIImplInstrumentation
-rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.define.SendCallbackInstrumentation
+rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.ConsumeMessageConcurrentlyInstrumentation
+rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.ConsumeMessageOrderlyInstrumentation
+rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.MQClientAPIImplInstrumentation
+rocketMQ-3.x=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.SendCallbackInstrumentation

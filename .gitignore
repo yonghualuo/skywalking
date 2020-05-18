@@ -20,3 +20,5 @@ OALLexer.tokens
 .externalToolBuilders
 /test/plugin/dist
 /test/plugin/workspace
+test/e2e/e2e-protocol/
+/skywalking-ui/package-lock.json

@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-dubbo=org.apache.skywalking.apm.plugin.dubbo.DubboInstrumentation
-dubbo=org.apache.skywalking.apm.plugin.dubbo.router.DubboRouterInstrumentation
-dubbo=org.apache.skywalking.apm.plugin.dubbo.schema.DubboBeanDefinitionInstrumentation
-dubbo=org.apache.skywalking.apm.plugin.dubbo.transport.DubboClientInstrumentation
+rocketMQ-3.x-aliyun=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.ConsumeMessageConcurrentlyInstrumentation
+rocketMQ-3.x-aliyun=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.ConsumeMessageOrderlyInstrumentation
+rocketMQ-3.x-aliyun=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.MQClientAPIImplInstrumentation
+rocketMQ-3.x-aliyun=org.apache.skywalking.apm.plugin.rocketMQ.v3.aliyun.define.SendCallbackInstrumentation
