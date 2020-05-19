@@ -8,15 +8,21 @@ import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.cluster.Router;
 
-import org.apache.skywalking.apm.plugin.dubbo.util.CommonUtils;
-import org.apache.skywalking.apm.plugin.dubbo.util.StringUtils;
-import org.apache.skywalking.apm.plugin.dubbo.util.ThreadLocalLabel;
+import org.apache.skywalking.apm.agent.core.constants.DevopsConstant;
+import org.apache.skywalking.apm.agent.core.context.CarrierItem;
+import org.apache.skywalking.apm.agent.core.context.ContextCarrier;
+import org.apache.skywalking.apm.agent.core.context.ContextManager;
+import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
+import org.apache.skywalking.apm.agent.core.util.CommonUtils;
+import org.apache.skywalking.apm.agent.core.util.StringUtils;
+import org.apache.skywalking.apm.agent.core.util.ThreadLocalLabel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-import static org.apache.skywalking.apm.plugin.dubbo.Constants.*;
+import static org.apache.skywalking.apm.agent.core.constants.DevopsConstant.*;
 
 /**
  * @author luoyonghua
@@ -104,9 +110,8 @@ public class LabelRouter implements Router {
     {
         envLabels.add(labelKey -> RpcContext.getContext().getAttachment(labelKey));
         envLabels.add(labelKey -> {
-            String label = ThreadLocalLabel.get();
+            String label = ThreadLocalLabel.get(labelKey);
             if (!StringUtils.isEmpty(label)) {
-                ThreadLocalLabel.set(label);
                 RpcContext.getContext().getAttachments().put(labelKey, label);
             }
             return label;
@@ -114,7 +119,7 @@ public class LabelRouter implements Router {
         envLabels.add(labelKey ->  {
             String label = CommonUtils.getPodVar(labelKey);
             if (!StringUtils.isEmpty(label)) {
-                ThreadLocalLabel.set(label);
+                ThreadLocalLabel.set(labelKey, label);
                 RpcContext.getContext().getAttachments().put(labelKey, label);
             }
             return label;

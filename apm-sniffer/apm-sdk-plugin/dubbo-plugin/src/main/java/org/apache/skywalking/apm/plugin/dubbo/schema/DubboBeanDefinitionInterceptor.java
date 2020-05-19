@@ -5,7 +5,7 @@ import org.apache.skywalking.apm.agent.core.logging.api.ILog;
 import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInterceptResult;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.StaticMethodsAroundInterceptor;
-import org.apache.skywalking.apm.plugin.dubbo.util.CommonUtils;
+import org.apache.skywalking.apm.agent.core.util.CommonUtils;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.support.ManagedMap;
 
 import java.lang.reflect.Method;
 
-import static org.apache.skywalking.apm.plugin.dubbo.Constants.*;
+import static org.apache.skywalking.apm.agent.core.constants.DevopsConstant.*;
 
 /**
  * 拦截DubboBeanDefinition解析, 添加自定义env变量

@@ -135,6 +135,11 @@
             <version>${ststem-rules.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>2.11.4</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

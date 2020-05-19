@@ -1,4 +1,4 @@
-package org.apache.skywalking.apm.plugin.dubbo.util;
+package org.apache.skywalking.apm.agent.core.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
