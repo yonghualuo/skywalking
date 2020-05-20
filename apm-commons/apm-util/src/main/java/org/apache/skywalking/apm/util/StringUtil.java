@@ -24,6 +24,10 @@ public final class StringUtil {
     }
 
     public static String join(final char delimiter, final String... strings) {
+        return join(String.valueOf(delimiter), strings);
+    }
+
+    public static String join(final String delimiter, final String... strings) {
         if (strings.length == 0) {
             return null;
         }
@@ -48,6 +52,7 @@ public final class StringUtil {
                 sb.append(delimiter);
             }
         }
+
         return sb.toString();
     }
 
@@ -68,5 +73,54 @@ public final class StringUtil {
             return str;
         }
         return str.substring(0, threshold);
+    }
+
+    public static String strip(String str, final String stripChars) {
+        if (isEmpty(str)) {
+            return str;
+        }
+        str = stripStart(str, stripChars);
+        return stripEnd(str, stripChars);
+    }
+
+
+    public static String stripStart(final String str, final String stripChars) {
+        int strLen;
+        if (str == null || (strLen = str.length()) == 0) {
+            return str;
+        }
+        int start = 0;
+        if (stripChars == null) {
+            while (start != strLen && Character.isWhitespace(str.charAt(start))) {
+                start++;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (start != strLen && stripChars.indexOf(str.charAt(start)) != -1) {
+                start++;
+            }
+        }
+        return str.substring(start);
+    }
+
+    public static String stripEnd(final String str, final String stripChars) {
+        int end;
+        if (str == null || (end = str.length()) == 0) {
+            return str;
+        }
+
+        if (stripChars == null) {
+            while (end != 0 && Character.isWhitespace(str.charAt(end - 1))) {
+                end--;
+            }
+        } else if (stripChars.isEmpty()) {
+            return str;
+        } else {
+            while (end != 0 && stripChars.indexOf(str.charAt(end - 1)) != -1) {
+                end--;
+            }
+        }
+        return str.substring(0, end);
     }
 }

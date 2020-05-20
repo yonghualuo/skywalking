@@ -115,4 +115,11 @@ public interface AbstractTracerContext {
      * @param span to be stopped.
      */
     void asyncStop(AsyncSpan span);
+
+    /**
+     * 自定义数据
+     *
+     * @return
+     */
+    CorrelationContext getCorrelationContext();
 }

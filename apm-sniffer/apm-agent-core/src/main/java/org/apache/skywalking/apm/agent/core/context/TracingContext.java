@@ -92,6 +92,9 @@ public class TracingContext implements AbstractTracerContext {
 
     private volatile boolean running;
 
+    private final CorrelationContext correlationContext;
+
+
     /**
      * Initialize all fields with default value.
      */
@@ -101,6 +104,7 @@ public class TracingContext implements AbstractTracerContext {
         samplingService = ServiceManager.INSTANCE.findService(SamplingService.class);
         isRunningInAsyncMode = false;
         running = true;
+        this.correlationContext = new CorrelationContext();
     }
 
     /**
@@ -188,6 +192,7 @@ public class TracingContext implements AbstractTracerContext {
         }
 
         carrier.setDistributedTraceIds(this.segment.getRelatedGlobalTraces());
+        this.correlationContext.inject(carrier);
     }
 
     /**
@@ -205,6 +210,7 @@ public class TracingContext implements AbstractTracerContext {
         if (span instanceof EntrySpan) {
             span.ref(ref);
         }
+        this.correlationContext.extract(carrier);
     }
 
     /**
@@ -217,7 +223,7 @@ public class TracingContext implements AbstractTracerContext {
         List<TraceSegmentRef> refs = this.segment.getRefs();
         ContextSnapshot snapshot = new ContextSnapshot(segment.getTraceSegmentId(),
             activeSpan().getSpanId(),
-            segment.getRelatedGlobalTraces());
+            segment.getRelatedGlobalTraces(), this.correlationContext);
         int entryOperationId;
         String entryOperationName = "";
         int entryApplicationInstanceId;
@@ -285,6 +291,7 @@ public class TracingContext implements AbstractTracerContext {
         this.segment.ref(segmentRef);
         this.activeSpan().ref(segmentRef);
         this.segment.relatedGlobalTraces(snapshot.getDistributedTraceId());
+        this.correlationContext.continued(snapshot);
     }
 
     /**
@@ -402,6 +409,11 @@ public class TracingContext implements AbstractTracerContext {
         }
         exitSpan.start();
         return exitSpan;
+    }
+
+    @Override
+    public CorrelationContext getCorrelationContext() {
+        return this.correlationContext;
     }
 
     /**

@@ -96,7 +96,8 @@ public class SkyWalkingAgent {
                     .or(nameContains(".reflectasm."))
                     .or(nameStartsWith("sun.reflect"))
                     .or(allSkyWalkingAgentExcludeToolkit())
-                    .or(ElementMatchers.<TypeDescription>isSynthetic()));
+                    .or(ElementMatchers.<TypeDescription>isSynthetic()))
+                    .or(nameStartsWith("com.intellij."));
 
         JDK9ModuleExporter.EdgeClasses edgeClasses = new JDK9ModuleExporter.EdgeClasses();
         try {

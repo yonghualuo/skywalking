@@ -22,16 +22,19 @@ package org.apache.skywalking.apm.plugin.tomcat78x;
 import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.skywalking.apm.agent.core.context.CarrierItem;
-import org.apache.skywalking.apm.agent.core.context.ContextCarrier;
-import org.apache.skywalking.apm.agent.core.context.ContextManager;
+
+import org.apache.skywalking.apm.agent.core.constants.DevopsConstant;
+import org.apache.skywalking.apm.agent.core.context.*;
 import org.apache.skywalking.apm.agent.core.context.tag.Tags;
 import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
 import org.apache.skywalking.apm.agent.core.context.trace.SpanLayer;
 import org.apache.skywalking.apm.agent.core.context.trace.TraceSegment;
+import org.apache.skywalking.apm.agent.core.logging.api.ILog;
+import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.EnhancedInstance;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.InstanceMethodsAroundInterceptor;
 import org.apache.skywalking.apm.agent.core.plugin.interceptor.enhance.MethodInterceptResult;
+import org.apache.skywalking.apm.agent.core.util.CommonUtils;
 import org.apache.skywalking.apm.agent.core.util.MethodUtil;
 import org.apache.skywalking.apm.network.trace.component.ComponentsDefine;
 
@@ -41,6 +44,8 @@ import org.apache.skywalking.apm.network.trace.component.ComponentsDefine;
  * trace segment id of the previous level if the serialized context is not null.
  */
 public class TomcatInvokeInterceptor implements InstanceMethodsAroundInterceptor {
+
+    private static final ILog logger = LogManager.getLogger(TomcatInvokeInterceptor.class);
 
     private static boolean IS_SERVLET_GET_STATUS_METHOD_EXIST;
     private static final String SERVLET_RESPONSE_CLASS = "javax.servlet.http.HttpServletResponse";
@@ -64,8 +69,11 @@ public class TomcatInvokeInterceptor implements InstanceMethodsAroundInterceptor
     @Override public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments,
         Class<?>[] argumentsTypes, MethodInterceptResult result) throws Throwable {
         HttpServletRequest request = (HttpServletRequest)allArguments[0];
-        ContextCarrier contextCarrier = new ContextCarrier();
 
+        // 从header中获取X-Virtual-Env
+        String envLabel = request.getHeader(DevopsConstant.VIRTUAL_ENV_HTTP_HEADER) == null ? CommonUtils.getPodVar(DevopsConstant.LABEL_KEY) : request.getHeader(DevopsConstant.VIRTUAL_ENV_HTTP_HEADER);
+
+        ContextCarrier contextCarrier = new ContextCarrier();
         CarrierItem next = contextCarrier.items();
         while (next.hasNext()) {
             next = next.next();
@@ -73,6 +81,8 @@ public class TomcatInvokeInterceptor implements InstanceMethodsAroundInterceptor
         }
 
         AbstractSpan span = ContextManager.createEntrySpan(request.getRequestURI(), contextCarrier);
+        ContextManager.getCorrelationContext().put(DevopsConstant.LABEL_KEY, envLabel);
+
         Tags.URL.set(span, request.getRequestURL().toString());
         Tags.HTTP.METHOD.set(span, request.getMethod());
         span.setComponent(ComponentsDefine.TOMCAT);

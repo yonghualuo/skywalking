@@ -354,4 +354,15 @@ public class Config {
             public static String THREADING_CLASS_PREFIXES = "";
         }
     }
+
+    /**
+     * custom data context
+     */
+    public static class Correlation {
+
+        public static int ELEMENT_MAX_NUMBER = 8;
+
+        public static int VALUE_MAX_LENGTH = 128;
+
+    }
 }

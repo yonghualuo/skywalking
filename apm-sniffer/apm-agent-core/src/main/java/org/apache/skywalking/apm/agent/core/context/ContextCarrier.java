@@ -76,14 +76,18 @@ public class ContextCarrier implements Serializable {
      */
     private DistributedTraceId primaryDistributedTraceId;
 
+    private CorrelationContext correlationContext = new CorrelationContext();
+
     public CarrierItem items() {
         CarrierItemHead head;
+
         if (Config.Agent.ACTIVE_V2_HEADER && Config.Agent.ACTIVE_V1_HEADER) {
             SW3CarrierItem  carrierItem = new SW3CarrierItem(this, null);
             SW6CarrierItem sw6CarrierItem = new SW6CarrierItem(this, carrierItem);
             head = new CarrierItemHead(sw6CarrierItem);
         } else if (Config.Agent.ACTIVE_V2_HEADER) {
-            SW6CarrierItem sw6CarrierItem = new SW6CarrierItem(this, null);
+            SW6CorrelationCarrierItem sw6CorrelationCarrierItem = new SW6CorrelationCarrierItem(correlationContext, null);
+            SW6CarrierItem sw6CarrierItem = new SW6CarrierItem(this, sw6CorrelationCarrierItem);
             head = new CarrierItemHead(sw6CarrierItem);
         } else if (Config.Agent.ACTIVE_V1_HEADER) {
             SW3CarrierItem carrierItem = new SW3CarrierItem(this, null);
@@ -298,6 +302,10 @@ public class ContextCarrier implements Serializable {
 
     public void setEntryServiceInstanceId(int entryServiceInstanceId) {
         this.entryServiceInstanceId = entryServiceInstanceId;
+    }
+
+    public CorrelationContext getCorrelationContext() {
+        return correlationContext;
     }
 
     public enum HeaderVersion {

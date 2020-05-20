@@ -100,6 +100,9 @@ public class ContextManager implements BootService {
             context.extract(carrier);
         } else {
             context = getOrCreate(operationName, false);
+            if (carrier != null && context instanceof IgnoredTracerContext) {
+                context.extract(carrier);
+            }
             span = context.createEntrySpan(operationName);
         }
         return span;
@@ -223,5 +226,14 @@ public class ContextManager implements BootService {
         }
 
         return runtimeContext;
+    }
+
+    public static CorrelationContext getCorrelationContext() {
+        final AbstractTracerContext tracerContext = get();
+        if (tracerContext == null) {
+            return null;
+        }
+
+        return tracerContext.getCorrelationContext();
     }
 }

@@ -8,19 +8,17 @@ import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.cluster.Router;
 
-import org.apache.skywalking.apm.agent.core.constants.DevopsConstant;
-import org.apache.skywalking.apm.agent.core.context.CarrierItem;
-import org.apache.skywalking.apm.agent.core.context.ContextCarrier;
-import org.apache.skywalking.apm.agent.core.context.ContextManager;
-import org.apache.skywalking.apm.agent.core.context.trace.AbstractSpan;
+import org.apache.skywalking.apm.agent.core.context.*;
+import org.apache.skywalking.apm.agent.core.logging.api.ILog;
+import org.apache.skywalking.apm.agent.core.logging.api.LogManager;
 import org.apache.skywalking.apm.agent.core.util.CommonUtils;
 import org.apache.skywalking.apm.agent.core.util.StringUtils;
 import org.apache.skywalking.apm.agent.core.util.ThreadLocalLabel;
+import org.apache.skywalking.apm.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import static org.apache.skywalking.apm.agent.core.constants.DevopsConstant.*;
 
@@ -29,6 +27,8 @@ import static org.apache.skywalking.apm.agent.core.constants.DevopsConstant.*;
  * @since 2020-04-20 21:22
  */
 public class LabelRouter implements Router {
+
+    private static final ILog logger = LogManager.getLogger(LabelRouter.class);
 
     private static final int DEFAULT_PRIORITY = 500;
     private int priority;
@@ -45,12 +45,37 @@ public class LabelRouter implements Router {
         return url;
     }
 
+    /**
+     * 从调用链上下文中获取环境标签
+     *
+     * @param labelKey
+     * @return
+     */
+    private String getLabelFromTraceContext(String labelKey) {
+        String label = null;
+        CorrelationContext correlationContext = ContextManager.getCorrelationContext();
+        if (correlationContext != null && correlationContext.get(labelKey).isPresent()) {
+            label = correlationContext.get(labelKey).get();
+        }
+
+        if (StringUtil.isEmpty(label)) {
+            label = RpcContext.getContext().getAttachment(labelKey);
+        }
+
+        if (StringUtil.isEmpty(label)) {
+            label = CommonUtils.getPodVar(labelKey);
+        }
+
+        return label;
+    }
+
     @Override
     public <T> List<Invoker<T>> route(List<Invoker<T>> invokers, URL url, Invocation invocation) throws RpcException {
+        String label = getLabelFromTraceContext(LABEL_KEY);
+
         // filter
         List<Invoker<T>> result = new ArrayList<Invoker<T>>();
         // Dynamic param
-        String label = getLabelFromEnv(LABEL_KEY);
         if (!StringUtils.isEmpty(label)) {
             // Select label invokers first
             // exactly match
@@ -71,7 +96,7 @@ public class LabelRouter implements Router {
         // If LABEL_KEY unspecified or no invoker be selected, downgrade to normal invokers
         if (result.isEmpty()) {
             // Only forceTag = true force match, otherwise downgrade
-            String forceTag = getLabelFromEnv(FORCE_USE_LABEL);
+                String forceTag = getLabelFromTraceContext(FORCE_USE_LABEL);
             if (StringUtils.isEmpty(forceTag) || "false".equals(forceTag)) {
                 for (Invoker<T> invoker : invokers) {
                     if (StringUtils.isEmpty(invoker.getUrl().getParameter(LABEL_KEY))) {
@@ -80,6 +105,11 @@ public class LabelRouter implements Router {
                 }
             }
         }
+
+        if (result.isEmpty()) {
+            logger.warn("[DubboRouteEmpty] the label is {}, the provider path is {}.", label, url.getPath());
+        }
+
         return result;
     }
 
@@ -140,5 +170,4 @@ public class LabelRouter implements Router {
     public interface EnvLabel {
         String get(String labelKey);
     }
-
 }
