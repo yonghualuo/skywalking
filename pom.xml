@@ -331,6 +331,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
+
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <version>${maven-enforcer-plugin.version}</version>
@@ -563,4 +564,26 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>jlb-nexus</id>
+            <name>JLB Nexus</name>
+            <url>http://nexus.bestjlb.cn/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>jlb-release</id>
+            <name>JLB Release Repo</name>
+            <url>http://nexus.bestjlb.cn/content/repositories/releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>jlb-snapshot</id>
+            <name>JLB Snapshot Repo</name>
+            <url>http://nexus.bestjlb.cn/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
